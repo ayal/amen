@@ -57,7 +57,7 @@ setx(1, [[4,7,9,12,15],[4,7,9,12,15],[4,7,9,14],[1,4,7,9,14]]);
 setx(2, [[0,2,10,11],[0,2,10,11], [0,2,10], [2,3,10]]);*/
 setx(100, [_.range(0,16),_.range(0,16),_.range(0,16),_.range(0,16)]);
 
-scheduler.setTempo(320);
+scheduler.setTempo(400);
 
 /* buffer loading */
 var BufferLoaderC = require('../scripts/bufferLoader.js');
@@ -164,7 +164,7 @@ var Amen = React.createClass({
 
     return (
         <div className="amenbox unselectable">
-	<input className="tempo" type="range" min="300" max="600" step="50" onChange={this.changeTempo} />
+	<input className="tempo" type="range" min="0" max="600" step="50" onChange={this.changeTempo} value="400" />
    	  <button className="amen-load" onClick={this.loadamen}>Load Amen</button>
 	    {boxes}
         </div>
