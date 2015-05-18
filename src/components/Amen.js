@@ -84,7 +84,7 @@ bufferLoader.load();
 
 var Amen = React.createClass({
 	getInitialState: function() {
-	    return {marked:{}};
+	    return {marked:{}, tempo:400};
 	},
   componentDidMount: function() {
 	    var that = this;
@@ -138,6 +138,7 @@ var Amen = React.createClass({
 	    var tempo = e.target.value;
 	    console.log('tempo',tempo);
 	    scheduler.setTempo(tempo);
+	    this.setState({tempo:tempo})
 	},
   render: function () {
 	    var that = this;
@@ -164,7 +165,7 @@ var Amen = React.createClass({
 
     return (
         <div className="amenbox unselectable">
-	<input className="tempo" type="range" min="0" max="600" step="50" onChange={this.changeTempo} value="400" />
+	<input className="tempo" type="range" min="0" max="600" step="50" onChange={this.changeTempo} value={this.state.tempo} />
    	  <button className="amen-load" onClick={this.loadamen}>Load Amen</button>
 	    {boxes}
         </div>
