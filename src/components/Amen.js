@@ -165,7 +165,7 @@ var Amen = React.createClass({
     return (
         <div className="amenbox">
 	<input type="range" min="300" max="600" step="50" onChange={this.changeTempo} />
-   	  <button className="amen-load" onClick={this.loadamen}>Load Amen!!</button>
+   	  <button className="amen-load" onClick={this.loadamen}>Load Amen!!!</button>
 	    {boxes}
         </div>
       );
