@@ -153,7 +153,7 @@ var Amen = React.createClass({
 					   {_.map(_.range(0+i*16,columns+i*16), function(y){
 						       var exClass = (y === that.state.col) ? 'selected' : 'nothing' ;
 						       var marked = (that.state.marked[x] && that.state.marked[x][y]) ? 'marked' : 'nothing' ;
-						       return (<span className={"amenblock " + exClass + " " + marked} data-col={y} onClick={that.mark(x,y)}>
+						       return (<span className={"amenblock unselectable " + exClass + " " + marked} data-col={y} onClick={that.mark(x,y)}>
 							       
 							       </span>);
 						   })}
@@ -163,9 +163,9 @@ var Amen = React.createClass({
 			});
 
     return (
-        <div className="amenbox">
-	<input type="range" min="300" max="600" step="50" onChange={this.changeTempo} />
-   	  <button className="amen-load" onClick={this.loadamen}>Load Amen!!!</button>
+        <div className="amenbox unselectable">
+	<input className="tempo" type="range" min="300" max="600" step="50" onChange={this.changeTempo} />
+   	  <button className="amen-load" onClick={this.loadamen}>Load Amen</button>
 	    {boxes}
         </div>
       );
