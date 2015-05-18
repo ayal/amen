@@ -32,7 +32,7 @@ scheduler.pipe(ditty).on('data', function(data){
 	if (data.event === 'start'){
 	    eventEmitter.emit('sound', data);
 	    if (data.id !== 100) {
-		makesound(Bopper.bufferList[data.id], data.id === 1 ?  0.1 : 0.09);
+		makesound(Bopper.bufferList[data.id], data.id === 1 || data.id === 2 ?  0.1 : 0.09);
 	    }
 	} else if (data.event === 'stop'){
 	}
