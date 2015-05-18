@@ -138,7 +138,7 @@ var Amen = React.createClass({
 	    var tempo = e.target.value;
 	    console.log('tempo',tempo);
 	    scheduler.setTempo(tempo);
-	    this.setState({tempo:tempo})
+	    this.setState({tempo:tempo});
 	},
   render: function () {
 	    var that = this;
