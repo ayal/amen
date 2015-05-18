@@ -57,7 +57,7 @@ setx(1, [[4,7,9,12,15],[4,7,9,12,15],[4,7,9,14],[1,4,7,9,14]]);
 setx(2, [[0,2,10,11],[0,2,10,11], [0,2,10], [2,3,10]]);*/
 setx(100, [_.range(0,16),_.range(0,16),_.range(0,16),_.range(0,16)]);
 
-scheduler.setTempo(400);
+scheduler.setTempo(500);
 
 /* buffer loading */
 var BufferLoaderC = require('../scripts/bufferLoader.js');
@@ -84,7 +84,7 @@ bufferLoader.load();
 
 var Amen = React.createClass({
 	getInitialState: function() {
-	    return {marked:{}, tempo:400};
+	    return {marked:{}, tempo:500};
 	},
   componentDidMount: function() {
 	    var that = this;
