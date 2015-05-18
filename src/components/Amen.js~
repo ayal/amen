@@ -1,0 +1,20 @@
+'use strict';
+
+var React = require('react/addons');
+
+
+require('styles/Amen.less');
+
+var Amen = React.createClass({
+
+  render: function () {
+    return (
+        <div>
+          <p>Content for Amen</p>
+        </div>
+      );
+  }
+});
+
+module.exports = Amen; 
+

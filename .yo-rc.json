@@ -1,0 +1,8 @@
+{
+  "generator-mocha": {},
+  "generator-react-webpack": {
+    "app-name": "amen",
+    "architecture": "flux",
+    "styles-language": "less"
+  }
+}
