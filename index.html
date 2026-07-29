@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Amen — break machine</title>
+<meta name="description" content="A tiny step sequencer for chopping up the Amen break, built with the Web Audio API.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#181818">
+<link rel="icon" href="favicon.ico">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app">
+    <header class="app__header">
+      <h1>Amen <span class="app__subtitle">break machine</span></h1>
+    </header>
+
+    <div class="transport">
+      <button id="playBtn" class="btn btn--primary" disabled>Loading&hellip;</button>
+      <button id="loadAmenBtn" class="btn">Load Amen</button>
+      <button id="clearBtn" class="btn">Clear</button>
+    </div>
+
+    <div class="controls">
+      <label class="control">
+        <span>Tempo <output id="tempoValue">500</output></span>
+        <input id="tempo" type="range" min="0" max="600" step="50" value="500">
+      </label>
+      <label class="control">
+        <span>Volume <output id="volumeValue">100%</output></span>
+        <input id="volume" type="range" min="0" max="100" step="1" value="100">
+      </label>
+    </div>
+
+    <div id="grid" class="grid"></div>
+
+    <footer class="app__footer">
+      <p>A decade-old amen break sequencer, dusted off &mdash; <a href="https://github.com/ayal/amen">source</a></p>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
