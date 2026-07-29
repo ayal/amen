@@ -6,10 +6,10 @@
   var TOTAL_STEPS = STEPS_PER_BAR * BARS;
 
   var TRACKS = [
-    { id: 'snare', label: 'Snare', file: 'sounds/S.mp3', gain: 0.1 },
-    { id: 'bass', label: 'Bass', file: 'sounds/B.mp3', gain: 0.1 },
-    { id: 'rim', label: 'Rim', file: 'sounds/R.mp3', gain: 0.09 },
-    { id: 'crash', label: 'Crash', file: 'sounds/C.mp4', gain: 0.09 }
+    { id: 'snare', label: 'Snare', file: 'sounds/S.m4a', gain: 0.1 },
+    { id: 'bass', label: 'Bass', file: 'sounds/B.m4a', gain: 0.1 },
+    { id: 'rim', label: 'Rim', file: 'sounds/R.m4a', gain: 0.09 },
+    { id: 'crash', label: 'Crash', file: 'sounds/C.m4a', gain: 0.09 }
   ];
 
   // The original "Load Amen" pattern: per-bar step lists for each track.
