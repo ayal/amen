@@ -12,13 +12,56 @@
     { id: 'crash', label: 'Crash', file: 'sounds/C.m4a', gain: 0.09 }
   ];
 
-  // The original "Load Amen" pattern: per-bar step lists for each track.
-  var AMEN_BARS = {
-    snare: [[4, 7, 9, 12, 15], [4, 7, 9, 12, 15], [4, 7, 9, 14], [1, 4, 7, 9, 14]],
-    bass: [[0, 2, 10, 11], [0, 2, 10, 11], [0, 2, 10], [2, 3, 10]],
-    rim: [[0, 2, 4, 6, 8, 10, 12, 14], [0, 2, 4, 6, 8, 10, 12, 14], [0, 2, 4, 6, 8, 10, 12, 14], [0, 2, 4, 6, 8, 10, 12, 14]],
-    crash: [[], [], [], []]
+  // Each preset is a per-bar step list (0-15) for each track, one array per bar.
+  var PRESETS = {
+    amen: {
+      label: 'Amen',
+      bars: {
+        snare: [[4, 7, 9, 12, 15], [4, 7, 9, 12, 15], [4, 7, 9, 14], [1, 4, 7, 9, 14]],
+        bass: [[0, 2, 10, 11], [0, 2, 10, 11], [0, 2, 10], [2, 3, 10]],
+        rim: [[0, 2, 4, 6, 8, 10, 12, 14], [0, 2, 4, 6, 8, 10, 12, 14], [0, 2, 4, 6, 8, 10, 12, 14], [0, 2, 4, 6, 8, 10, 12, 14]],
+        crash: [[], [], [], []]
+      }
+    },
+    think: {
+      label: 'Think Break',
+      bars: {
+        snare: [[4, 12], [4, 12], [4, 12], [4, 12, 14]],
+        bass: [[0, 10], [0, 10], [0, 10], [0, 7, 10, 11]],
+        rim: [[0, 2, 4, 6, 8, 10, 12, 14], [0, 2, 4, 6, 8, 10, 12, 14], [0, 2, 4, 6, 8, 10, 12, 14], [0, 2, 4, 6, 8, 9, 10, 12, 14, 15]],
+        crash: [[0], [], [], []]
+      }
+    },
+    boomBap: {
+      label: 'Boom Bap',
+      bars: {
+        snare: [[8], [8], [8], [8, 9]],
+        bass: [[0, 3, 6, 10], [0, 3, 6, 10], [0, 3, 6, 10], [0, 3, 6, 10, 13]],
+        rim: [[2, 6, 10, 14], [2, 6, 10, 14], [2, 6, 10, 14], [2, 6, 9, 10, 14]],
+        crash: [[], [], [], []]
+      }
+    },
+    fourOnFloor: {
+      label: 'Four on the Floor',
+      bars: {
+        snare: [[4, 12], [4, 12], [4, 12], [4, 12]],
+        bass: [[0, 4, 8, 12], [0, 4, 8, 12], [0, 4, 8, 12], [0, 4, 8, 12]],
+        rim: [[2, 6, 10, 14], [2, 6, 10, 14], [2, 6, 10, 14], [2, 3, 6, 10, 14, 15]],
+        crash: [[0], [], [], []]
+      }
+    },
+    jungle: {
+      label: 'Jungle Skitter',
+      bars: {
+        snare: [[5, 9, 15], [3, 9, 13], [5, 11, 15], [3, 7, 9, 13]],
+        bass: [[0, 3, 7, 10, 13], [0, 6, 10, 13], [0, 3, 7, 10], [0, 3, 6, 10, 13, 14]],
+        rim: [[0, 2, 3, 6, 8, 9, 11, 12, 14, 15], [0, 1, 3, 5, 6, 8, 10, 11, 13, 15], [0, 2, 3, 6, 8, 9, 11, 12, 14, 15], [0, 1, 3, 4, 6, 8, 9, 11, 13, 15]],
+        crash: [[0], [], [8], []]
+      }
+    }
   };
+
+  var DEFAULT_PRESET = 'amen';
 
   function barsToSteps(bars) {
     var steps = new Array(TOTAL_STEPS).fill(false);
@@ -30,27 +73,30 @@
     return steps;
   }
 
-  function amenPattern() {
-    var pattern = {};
+  function presetPattern(key) {
+    var bars = PRESETS[key].bars;
+    var pat = {};
     TRACKS.forEach(function (t) {
-      pattern[t.id] = barsToSteps(AMEN_BARS[t.id]);
+      pat[t.id] = barsToSteps(bars[t.id]);
     });
-    return pattern;
+    return pat;
   }
 
   function emptyPattern() {
-    var pattern = {};
+    var pat = {};
     TRACKS.forEach(function (t) {
-      pattern[t.id] = new Array(TOTAL_STEPS).fill(false);
+      pat[t.id] = new Array(TOTAL_STEPS).fill(false);
     });
-    return pattern;
+    return pat;
   }
 
-  var pattern = amenPattern();
+  var currentPresetKey = DEFAULT_PRESET;
+  var pattern = presetPattern(currentPresetKey);
   var cells = {}; // "trackId-step" -> element
 
   var playBtn = document.getElementById('playBtn');
-  var loadAmenBtn = document.getElementById('loadAmenBtn');
+  var presetSelect = document.getElementById('presetSelect');
+  var reloadBtn = document.getElementById('reloadBtn');
   var clearBtn = document.getElementById('clearBtn');
   var tempoInput = document.getElementById('tempo');
   var tempoValue = document.getElementById('tempoValue');
@@ -58,28 +104,46 @@
   var volumeValue = document.getElementById('volumeValue');
   var grid = document.getElementById('grid');
 
+  var CELL_BASE_CLASSES = ['cell', 'aspect-square', 'rounded-sm', 'border', 'transition-colors', 'duration-75', 'min-w-[16px]', 'touch-manipulation', 'select-none'];
+  var CELL_INACTIVE_CLASSES = ['bg-base-200', 'border-base-content/10'];
+  var CELL_ACTIVE_CLASSES = ['bg-primary', 'border-primary'];
+  var CELL_PLAYHEAD_CLASSES = ['ring-2', 'ring-accent', 'ring-inset'];
+
+  function populatePresetSelect() {
+    Object.keys(PRESETS).forEach(function (key) {
+      var opt = document.createElement('option');
+      opt.value = key;
+      opt.textContent = PRESETS[key].label;
+      presetSelect.appendChild(opt);
+    });
+    presetSelect.value = currentPresetKey;
+  }
+
   function buildGrid() {
     for (var bar = 0; bar < BARS; bar++) {
       var barEl = document.createElement('div');
-      barEl.className = 'bar';
+      barEl.className = 'card bg-base-100/40 border border-base-content/10 rounded-box p-2 sm:p-3 bar-scroll overflow-x-auto';
 
       TRACKS.forEach(function (track) {
         var rowEl = document.createElement('div');
-        rowEl.className = 'bar__row';
+        rowEl.className = 'flex items-center gap-2 py-0.5';
 
         var labelEl = document.createElement('span');
-        labelEl.className = 'bar__label';
+        labelEl.className = 'w-10 sm:w-12 shrink-0 text-[10px] sm:text-[11px] uppercase tracking-wider text-base-content/50';
         labelEl.textContent = track.label;
         rowEl.appendChild(labelEl);
 
         var cellsEl = document.createElement('div');
-        cellsEl.className = 'bar__cells';
+        cellsEl.className = 'grid grid-cols-[repeat(16,minmax(0,1fr))] gap-1 flex-1 min-w-[22rem]';
 
         for (var col = 0; col < STEPS_PER_BAR; col++) {
           var step = bar * STEPS_PER_BAR + col;
           var cellEl = document.createElement('button');
           cellEl.type = 'button';
-          cellEl.className = 'cell';
+          cellEl.className = CELL_BASE_CLASSES.concat(CELL_INACTIVE_CLASSES).join(' ');
+          if (col % 4 === 0) {
+            cellEl.classList.add('ml-0.5');
+          }
           cellEl.setAttribute('aria-label', track.label + ' step ' + (step + 1));
           (function (trackId, stepIndex) {
             cellEl.addEventListener('click', function () {
@@ -102,9 +166,11 @@
   function renderCell(trackId, step) {
     var el = cells[trackId + '-' + step];
     if (pattern[trackId][step]) {
-      el.classList.add('is-active');
+      el.classList.remove.apply(el.classList, CELL_INACTIVE_CLASSES);
+      el.classList.add.apply(el.classList, CELL_ACTIVE_CLASSES);
     } else {
-      el.classList.remove('is-active');
+      el.classList.remove.apply(el.classList, CELL_ACTIVE_CLASSES);
+      el.classList.add.apply(el.classList, CELL_INACTIVE_CLASSES);
     }
   }
 
@@ -116,6 +182,7 @@
     });
   }
 
+  populatePresetSelect();
   buildGrid();
   renderAll();
 
@@ -219,7 +286,7 @@
   var playheadCells = [];
 
   function clearPlayhead() {
-    playheadCells.forEach(function (el) { el.classList.remove('is-playhead'); });
+    playheadCells.forEach(function (el) { el.classList.remove.apply(el.classList, CELL_PLAYHEAD_CLASSES); });
     playheadCells = [];
   }
 
@@ -227,7 +294,7 @@
     clearPlayhead();
     TRACKS.forEach(function (track) {
       var el = cells[track.id + '-' + step];
-      el.classList.add('is-playhead');
+      el.classList.add.apply(el.classList, CELL_PLAYHEAD_CLASSES);
       playheadCells.push(el);
     });
   }
@@ -282,8 +349,14 @@
     });
   });
 
-  loadAmenBtn.addEventListener('click', function () {
-    pattern = amenPattern();
+  presetSelect.addEventListener('change', function () {
+    currentPresetKey = presetSelect.value;
+    pattern = presetPattern(currentPresetKey);
+    renderAll();
+  });
+
+  reloadBtn.addEventListener('click', function () {
+    pattern = presetPattern(currentPresetKey);
     renderAll();
   });
 

@@ -1,42 +1,68 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="synthwave">
 <head>
 <meta charset="utf-8">
 <title>Amen — break machine</title>
-<meta name="description" content="A tiny step sequencer for chopping up the Amen break, built with the Web Audio API.">
+<meta name="description" content="A tiny step sequencer for chopping up classic breakbeats, built with the Web Audio API.">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#181818">
+<meta name="theme-color" content="#1a103c">
 <link rel="icon" href="favicon.ico">
+<link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+<link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" />
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <main class="app">
-    <header class="app__header">
-      <h1>Amen <span class="app__subtitle">break machine</span></h1>
+<body class="min-h-screen bg-base-300 text-base-content">
+  <main class="max-w-2xl mx-auto px-3 sm:px-6 py-6 sm:py-10">
+
+    <header class="text-center mb-6">
+      <h1 class="title-gradient text-5xl sm:text-6xl font-black tracking-tight">
+        Amen
+      </h1>
+      <p class="text-xs sm:text-sm uppercase tracking-[0.35em] text-base-content/60 mt-1">Break Machine</p>
     </header>
 
-    <div class="transport">
-      <button id="playBtn" class="btn btn--primary" disabled>Loading&hellip;</button>
-      <button id="loadAmenBtn" class="btn">Load Amen</button>
-      <button id="clearBtn" class="btn">Clear</button>
-    </div>
+    <section class="card bg-base-100/70 shadow-xl border border-base-content/10 backdrop-blur mb-5">
+      <div class="card-body gap-4 p-4 sm:p-6">
 
-    <div class="controls">
-      <label class="control">
-        <span>Tempo <output id="tempoValue">500</output></span>
-        <input id="tempo" type="range" min="0" max="600" step="50" value="500">
-      </label>
-      <label class="control">
-        <span>Volume <output id="volumeValue">100%</output></span>
-        <input id="volume" type="range" min="0" max="100" step="1" value="100">
-      </label>
-    </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="playBtn" class="btn btn-primary min-w-[7rem]" disabled>Loading&hellip;</button>
 
-    <div id="grid" class="grid"></div>
+          <select id="presetSelect" class="select select-bordered select-primary flex-1 min-w-[9rem]" aria-label="Preset"></select>
 
-    <footer class="app__footer">
-      <p>A decade-old amen break sequencer, dusted off &mdash; <a href="https://github.com/ayal/amen">source</a></p>
+          <div class="join">
+            <button id="reloadBtn" class="btn btn-ghost join-item" title="Reload preset" aria-label="Reload preset">&#8635;</button>
+            <button id="clearBtn" class="btn btn-ghost join-item" title="Clear grid" aria-label="Clear grid">&#10005;</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <label class="w-full">
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-xs uppercase tracking-wider text-base-content/60">Tempo</span>
+              <span id="tempoValue" class="badge badge-primary badge-outline badge-sm font-mono">500</span>
+            </div>
+            <input id="tempo" type="range" min="0" max="600" step="50" value="500" class="range range-primary range-xs w-full">
+          </label>
+
+          <label class="w-full">
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-xs uppercase tracking-wider text-base-content/60">Volume</span>
+              <span id="volumeValue" class="badge badge-secondary badge-outline badge-sm font-mono">100%</span>
+            </div>
+            <input id="volume" type="range" min="0" max="100" step="1" value="100" class="range range-secondary range-xs w-full">
+          </label>
+        </div>
+
+      </div>
+    </section>
+
+    <div id="grid" class="flex flex-col gap-3"></div>
+
+    <footer class="text-center text-xs text-base-content/50 mt-8">
+      <p>A decade-old amen break sequencer, dusted off &mdash; <a class="link link-primary" href="https://github.com/ayal/amen">source</a></p>
     </footer>
+
   </main>
 
   <script src="app.js"></script>
