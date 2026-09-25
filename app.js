@@ -104,7 +104,7 @@
   var volumeValue = document.getElementById('volumeValue');
   var grid = document.getElementById('grid');
 
-  var CELL_BASE_CLASSES = ['cell', 'aspect-square', 'rounded-sm', 'border', 'transition-colors', 'duration-75', 'min-w-[16px]', 'touch-manipulation', 'select-none'];
+  var CELL_BASE_CLASSES = ['cell', 'aspect-square', 'rounded-sm', 'border', 'transition-colors', 'duration-75', 'touch-manipulation', 'select-none'];
   var CELL_INACTIVE_CLASSES = ['bg-base-200', 'border-base-content/10'];
   var CELL_ACTIVE_CLASSES = ['bg-primary', 'border-primary'];
   var CELL_PLAYHEAD_CLASSES = ['ring-2', 'ring-accent', 'ring-inset'];
@@ -122,19 +122,19 @@
   function buildGrid() {
     for (var bar = 0; bar < BARS; bar++) {
       var barEl = document.createElement('div');
-      barEl.className = 'card bg-base-100/40 border border-base-content/10 rounded-box p-2 sm:p-3 bar-scroll overflow-x-auto';
+      barEl.className = 'card bg-base-100/40 border border-base-content/10 rounded-box p-2 sm:p-3 overflow-hidden';
 
       TRACKS.forEach(function (track) {
         var rowEl = document.createElement('div');
-        rowEl.className = 'flex items-center gap-2 py-0.5';
+        rowEl.className = 'flex items-center gap-1.5 sm:gap-2 py-0.5 min-w-0';
 
         var labelEl = document.createElement('span');
-        labelEl.className = 'w-10 sm:w-12 shrink-0 text-[10px] sm:text-[11px] uppercase tracking-wider text-base-content/50';
+        labelEl.className = 'w-9 sm:w-12 shrink-0 text-[9px] sm:text-[11px] uppercase tracking-wider text-base-content/50 truncate';
         labelEl.textContent = track.label;
         rowEl.appendChild(labelEl);
 
         var cellsEl = document.createElement('div');
-        cellsEl.className = 'grid grid-cols-[repeat(16,minmax(0,1fr))] gap-1 flex-1 min-w-[22rem]';
+        cellsEl.className = 'grid grid-cols-[repeat(16,minmax(0,1fr))] gap-0.5 sm:gap-1 flex-1 min-w-0';
 
         for (var col = 0; col < STEPS_PER_BAR; col++) {
           var step = bar * STEPS_PER_BAR + col;
@@ -142,7 +142,7 @@
           cellEl.type = 'button';
           cellEl.className = CELL_BASE_CLASSES.concat(CELL_INACTIVE_CLASSES).join(' ');
           if (col % 4 === 0) {
-            cellEl.classList.add('ml-0.5');
+            cellEl.classList.add('ml-px', 'sm:ml-0.5');
           }
           cellEl.setAttribute('aria-label', track.label + ' step ' + (step + 1));
           (function (trackId, stepIndex) {

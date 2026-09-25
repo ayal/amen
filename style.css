@@ -5,15 +5,6 @@
   color: transparent;
 }
 
-.bar-scroll {
-  scrollbar-width: thin;
-}
-
-.bar-scroll::-webkit-scrollbar {
-  height: 6px;
-}
-
-.bar-scroll::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, currentColor 25%, transparent);
-  border-radius: 999px;
+html, body {
+  overflow-x: hidden;
 }
