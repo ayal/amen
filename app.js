@@ -34,12 +34,12 @@
     jungleD: {
       label: 'Jungle D (170)',
       dir: 'sounds/jungle-d',
-      gain: { snare: 0.11, bass: 0.073, rim: 0.022, crash: 0.09 }
+      gain: { snare: 0.1, bass: 0.1, rim: 0.1, crash: 0.09 }
     },
     jungleA: {
       label: 'Jungle A (170)',
       dir: 'sounds/jungle-a',
-      gain: { snare: 0.07, bass: 0.044, rim: 0.03, crash: 0.09 }
+      gain: { snare: 0.1, bass: 0.1, rim: 0.1, crash: 0.09 }
     }
   };
   var DEFAULT_KIT = 'classic';
