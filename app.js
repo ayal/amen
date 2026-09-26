@@ -30,6 +30,16 @@
       label: 'DnB Bright (175)',
       dir: 'sounds/dnb-bright',
       gain: { snare: 0.07, bass: 0.06, rim: 0.035, crash: 0.04 }
+    },
+    jungleD: {
+      label: 'Jungle D (170)',
+      dir: 'sounds/jungle-d',
+      gain: { snare: 0.11, bass: 0.073, rim: 0.022, crash: 0.09 }
+    },
+    jungleA: {
+      label: 'Jungle A (170)',
+      dir: 'sounds/jungle-a',
+      gain: { snare: 0.07, bass: 0.044, rim: 0.03, crash: 0.09 }
     }
   };
   var DEFAULT_KIT = 'classic';
