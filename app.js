@@ -6,11 +6,37 @@
   var TOTAL_STEPS = STEPS_PER_BAR * BARS;
 
   var TRACKS = [
-    { id: 'snare', label: 'Snare', file: 'sounds/S.m4a', gain: 0.1 },
-    { id: 'bass', label: 'Bass', file: 'sounds/B.m4a', gain: 0.1 },
-    { id: 'rim', label: 'Rim', file: 'sounds/R.m4a', gain: 0.09 },
-    { id: 'crash', label: 'Crash', file: 'sounds/C.m4a', gain: 0.09 }
+    { id: 'snare', label: 'Snare', file: 'S.m4a' },
+    { id: 'bass', label: 'Bass', file: 'B.m4a' },
+    { id: 'rim', label: 'Rim', file: 'R.m4a' },
+    { id: 'crash', label: 'Crash', file: 'C.m4a' }
   ];
+
+  // Sound kits. Each kit is a folder holding S/B/R/C.m4a plus a per-track gain
+  // that levels the kits against each other (the DnB slices are peak-normalised
+  // and hotter than the classic set).
+  var KITS = {
+    classic: {
+      label: 'Classic',
+      dir: 'sounds',
+      gain: { snare: 0.1, bass: 0.1, rim: 0.09, crash: 0.09 }
+    },
+    dnbHeavy: {
+      label: 'DnB Heavy (173)',
+      dir: 'sounds/dnb-heavy',
+      gain: { snare: 0.065, bass: 0.065, rim: 0.04, crash: 0.055 }
+    },
+    dnbBright: {
+      label: 'DnB Bright (175)',
+      dir: 'sounds/dnb-bright',
+      gain: { snare: 0.07, bass: 0.06, rim: 0.035, crash: 0.04 }
+    }
+  };
+  var DEFAULT_KIT = 'classic';
+
+  function trackFile(kitKey, track) {
+    return KITS[kitKey].dir + '/' + track.file;
+  }
 
   // Each preset is a per-bar step list (0-15) for each track, one array per bar.
   var PRESETS = {
@@ -92,11 +118,13 @@
   }
 
   var currentPresetKey = DEFAULT_PRESET;
+  var currentKitKey = DEFAULT_KIT;
   var pattern = presetPattern(currentPresetKey);
   var cells = {}; // "trackId-step" -> element
 
   var playBtn = document.getElementById('playBtn');
   var presetSelect = document.getElementById('presetSelect');
+  var kitSelect = document.getElementById('kitSelect');
   var reloadBtn = document.getElementById('reloadBtn');
   var clearBtn = document.getElementById('clearBtn');
   var tempoInput = document.getElementById('tempo');
@@ -183,7 +211,18 @@
     });
   }
 
+  function populateKitSelect() {
+    Object.keys(KITS).forEach(function (key) {
+      var opt = document.createElement('option');
+      opt.value = key;
+      opt.textContent = KITS[key].label;
+      kitSelect.appendChild(opt);
+    });
+    kitSelect.value = currentKitKey;
+  }
+
   populatePresetSelect();
+  populateKitSelect();
   buildGrid();
   renderAll();
 
@@ -191,20 +230,27 @@
 
   var audioCtx = null;
   var masterGain = null;
-  var rawBuffers = {};
-  var buffers = {};
-  var soundsReady = fetchAllRaw();
+  var rawBuffers = {};   // kitKey -> trackId -> ArrayBuffer
+  var buffers = {};      // kitKey -> trackId -> AudioBuffer
+  var kitFetches = {};   // kitKey -> Promise
+  var soundsReady = fetchKitRaw(currentKitKey).then(function () {
+    playBtn.disabled = false;
+    playBtn.textContent = 'Play';
+  });
 
-  function fetchAllRaw() {
-    return Promise.all(TRACKS.map(function (track) {
-      return fetch(track.file)
+  function fetchKitRaw(kitKey) {
+    if (kitFetches[kitKey]) {
+      return kitFetches[kitKey];
+    }
+    rawBuffers[kitKey] = rawBuffers[kitKey] || {};
+    kitFetches[kitKey] = Promise.all(TRACKS.map(function (track) {
+      var file = trackFile(kitKey, track);
+      return fetch(file)
         .then(function (res) { return res.arrayBuffer(); })
-        .then(function (data) { rawBuffers[track.id] = data; })
-        .catch(function (err) { console.error('failed to fetch', track.file, err); });
-    })).then(function () {
-      playBtn.disabled = false;
-      playBtn.textContent = 'Play';
-    });
+        .then(function (data) { rawBuffers[kitKey][track.id] = data; })
+        .catch(function (err) { console.error('failed to fetch', file, err); });
+    }));
+    return kitFetches[kitKey];
   }
 
   function ensureAudioContext() {
@@ -217,30 +263,38 @@
     return audioCtx;
   }
 
+  function decodeKit(kitKey) {
+    buffers[kitKey] = buffers[kitKey] || {};
+    return fetchKitRaw(kitKey).then(function () {
+      return Promise.all(TRACKS.map(function (track) {
+        if (buffers[kitKey][track.id] || !rawBuffers[kitKey][track.id]) {
+          return null;
+        }
+        // decodeAudioData detaches the buffer, so hand it a copy.
+        var copy = rawBuffers[kitKey][track.id].slice(0);
+        return audioCtx.decodeAudioData(copy).then(function (buffer) {
+          buffers[kitKey][track.id] = buffer;
+        }).catch(function (err) {
+          console.error('failed to decode', trackFile(kitKey, track), err);
+        });
+      }));
+    });
+  }
+
   function decodeAll() {
-    return Promise.all(TRACKS.map(function (track) {
-      if (buffers[track.id] || !rawBuffers[track.id]) {
-        return null;
-      }
-      // decodeAudioData detaches the buffer, so hand it a copy.
-      var copy = rawBuffers[track.id].slice(0);
-      return audioCtx.decodeAudioData(copy).then(function (buffer) {
-        buffers[track.id] = buffer;
-      }).catch(function (err) {
-        console.error('failed to decode', track.file, err);
-      });
-    }));
+    return decodeKit(currentKitKey);
   }
 
   function playSound(track, time) {
-    var buffer = buffers[track.id];
+    var kit = buffers[currentKitKey];
+    var buffer = kit && kit[track.id];
     if (!buffer) {
       return;
     }
     var source = audioCtx.createBufferSource();
     source.buffer = buffer;
     var gainNode = audioCtx.createGain();
-    gainNode.gain.value = track.gain;
+    gainNode.gain.value = KITS[currentKitKey].gain[track.id];
     source.connect(gainNode).connect(masterGain);
     source.start(time);
   }
@@ -354,6 +408,18 @@
     currentPresetKey = presetSelect.value;
     pattern = presetPattern(currentPresetKey);
     renderAll();
+  });
+
+  kitSelect.addEventListener('change', function () {
+    var kitKey = kitSelect.value;
+    // Fetch (and decode, if the context exists) before switching so the
+    // sequencer never hits an empty buffer mid-loop.
+    var ready = audioCtx ? decodeKit(kitKey) : fetchKitRaw(kitKey);
+    kitSelect.disabled = true;
+    ready.then(function () {
+      currentKitKey = kitKey;
+      kitSelect.disabled = false;
+    });
   });
 
   reloadBtn.addEventListener('click', function () {
