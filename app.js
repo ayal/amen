@@ -21,24 +21,9 @@
       dir: 'sounds',
       gain: { snare: 0.1, bass: 0.1, rim: 0.09, crash: 0.09 }
     },
-    dnbHeavy: {
-      label: 'DnB Heavy (173)',
-      dir: 'sounds/dnb-heavy',
-      gain: { snare: 0.065, bass: 0.065, rim: 0.04, crash: 0.055 }
-    },
-    dnbBright: {
-      label: 'DnB Bright (175)',
-      dir: 'sounds/dnb-bright',
-      gain: { snare: 0.07, bass: 0.06, rim: 0.035, crash: 0.04 }
-    },
     jungleD: {
-      label: 'Jungle D (170)',
+      label: 'Jungle',
       dir: 'sounds/jungle-d',
-      gain: { snare: 0.1, bass: 0.1, rim: 0.1, crash: 0.09 }
-    },
-    jungleA: {
-      label: 'Jungle A (170)',
-      dir: 'sounds/jungle-a',
       gain: { snare: 0.1, bass: 0.1, rim: 0.1, crash: 0.09 }
     }
   };
